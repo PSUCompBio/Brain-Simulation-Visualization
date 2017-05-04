@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Brain_Visualization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='w3.css') }}" type="text/css">
+    <script type="text/javascript">
+        var regionID = '{{regionID}}';
+        var severityID = '{{severityID}}';
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var myArr = JSON.parse(this.responseText);
+                var regionAll = myArr.region;
+                var severityAll = myArr.severity;
+
+                var region;
+                for (var i=0; i<regionAll.length; i++) {
+                    if ( regionAll[i].id == regionID ) {
+                        region = regionAll[i];
+                        break;
+                    }
+                }
+                document.getElementById("region_name").innerHTML = region.name;
+                document.getElementById("region_function").innerHTML = region.function;
+
+                var lImg = new Image();
+                lImg.src = region.region_url;
+                lImg.setAttribute("style", "width:100%;height:100%");
+                lImg.setAttribute("alt", "Brain Region");
+                document.getElementById("leftImage").appendChild(lImg);
+
+                var mImg = new Image();
+                mImg.src = region.function_url;
+                mImg.setAttribute("style", "width:80%;height:80%");
+                mImg.setAttribute("alt", "Function affected");
+                document.getElementById("middleImage").appendChild(mImg);
+
+                var severity;
+                for (var i=0; i<severityAll.length; i++) {
+                    if ( severityAll[i].id == severityID ) {
+                        severity = severityAll[i];
+                        break;
+                    }
+                }
+                document.getElementById("severity_name").innerHTML =  severity.name ;
+
+                var rImg = new Image();
+                rImg.src = severity.url;
+                rImg.setAttribute("style", "width:100%;height:120%");
+                rImg.setAttribute("alt", "Severity");
+                document.getElementById("rightImage").appendChild(rImg);
+            }
+        };
+        xmlhttp.open("GET", "{{ url_for('static', filename='jsons/Results_to_Show.json') }}", true); 
+        xmlhttp.send();    
+
+    </script>
+</head>
+
+<body>
+    <div class="w3-row-padding">
+        <div class="w3-col l4 m6 s12 w3-center w3-margin-top">
+            <div class="w3-display-container">
+                <h4 ><b id="region_name"></b></h4>
+                <p >experienced <b class="w3-text-red" id="severity_name"></b> levels of impact</p>
+                <div id="leftImage"></div>
+            </div>        
+        </div>
+    
+        <div class="w3-col l4 m6 s12 w3-center w3-margin-top">
+            <div class="w3-display-container">
+                <h4 id="mText1">This brain region has a likely role in</h4>
+                <h4 id="mText2">function of <b class="w3-text-red" id="region_function"></b></h4>
+                <div class="w3-display-bottom w3-white w3-padding">    
+                    <div id="middleImage"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w3-col l2 m3 s6 w3-center w3-margin-top">
+            <div class="w3-display-container">
+                <div id="rightImage"></div>
+            </div>
+        </div>
+    </div> 
+
+    <div id="regionID"></div>
+    <div id="severityID"></div>
+</body>
+</html>
